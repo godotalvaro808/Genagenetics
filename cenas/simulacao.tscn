@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dfj6us2ln5rck"]
+
+[ext_resource type="Script" uid="uid://b2lrnlvo66l51" path="res://scripts/simulacao.gd" id="1_j0l2g"]
+[ext_resource type="Texture2D" uid="uid://fpq2dmhdr6js" path="res://sprites/bgCelula.png" id="2_744py"]
+[ext_resource type="PackedScene" uid="uid://70v34qpiy4nq" path="res://cenas/cromossomo_visual.tscn" id="3_jxeb6"]
+
+[node name="Simulacao" type="Node2D" unique_id=386405566]
+script = ExtResource("1_j0l2g")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=2081527090]
+offset_right = 650.0
+offset_bottom = 650.0
+color = Color(0.4392157, 0.4509804, 0.5921569, 1)
+
+[node name="Celula" type="Node2D" parent="." unique_id=279327322]
+
+[node name="sprCelula" type="Sprite2D" parent="Celula" unique_id=1073021447]
+position = Vector2(345, 305)
+scale = Vector2(0.5, 0.53)
+texture = ExtResource("2_744py")
+
+[node name="CromossomoVisual" parent="Celula" unique_id=426017361 instance=ExtResource("3_jxeb6")]

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bwgrgups7o800"]
+
+[ext_resource type="Script" uid="uid://j15ig5s63erd" path="res://scripts/jogo.gd" id="1_32vai"]
+[ext_resource type="PackedScene" uid="uid://bdcs3frn0b2vp" path="res://cenas/painel_controle.tscn" id="1_k46e6"]
+[ext_resource type="PackedScene" uid="uid://dfj6us2ln5rck" path="res://cenas/simulacao.tscn" id="3_1frua"]
+
+[node name="Jogo" type="Control" unique_id=1137234020]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_32vai")
+
+[node name="Background" type="ColorRect" parent="." unique_id=2111513630]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.29164523, 0.29164574, 0.29740793, 1)
+
+[node name="PainelControle" parent="." unique_id=1442262109 instance=ExtResource("1_k46e6")]
+layout_mode = 0
+
+[node name="AreaSimulacao" type="Control" parent="." unique_id=135179582]
+anchors_preset = 0
+offset_left = 365.0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="Simulacao" parent="." unique_id=386405566 instance=ExtResource("3_1frua")]
+position = Vector2(500, -2)

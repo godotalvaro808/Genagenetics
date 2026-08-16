@@ -1,0 +1,117 @@
+[gd_scene format=3 uid="uid://bdcs3frn0b2vp"]
+
+[ext_resource type="Script" uid="uid://dcyojh22t5x4q" path="res://scripts/painel_controle.gd" id="1_lubx3"]
+
+[node name="PainelControle" type="Panel" unique_id=1834890576]
+script = ExtResource("1_lubx3")
+
+[node name="Titulo" type="Label" parent="." unique_id=763410247]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+text = "Configurações"
+
+[node name="LblCromossomos" type="Label" parent="." unique_id=589580687]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 50.0
+text = "Cromossomos Homólogos"
+
+[node name="SliderCromossomos" type="HSlider" parent="." unique_id=2105570264]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 75.0
+offset_right = 250.0
+min_value = 1.0
+max_value = 12.0
+value = 1.0
+
+[node name="SboxCromossomos" type="SpinBox" parent="." unique_id=233768224]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 65.0
+offset_right = 346.5
+offset_bottom = 96.0
+
+[node name="LblSegmentos" type="Label" parent="." unique_id=807117561]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 115.0
+text = "Segmentos"
+
+[node name="SliderSegmentos" type="HSlider" parent="." unique_id=884162542]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 140.0
+offset_right = 250.0
+min_value = 2.0
+max_value = 1000.0
+value = 2.0
+
+[node name="SboxSegmentos" type="SpinBox" parent="." unique_id=2099179625]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 130.0
+offset_right = 346.5
+offset_bottom = 161.0
+
+[node name="LblAdesividade" type="Label" parent="." unique_id=627865943]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 180.0
+text = "Porcentagem de Adesão"
+
+[node name="SliderAdesividade" type="HSlider" parent="." unique_id=1810157566]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 205.0
+offset_right = 250.0
+
+[node name="SboxAdesividade" type="SpinBox" parent="." unique_id=479009364]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 195.0
+offset_right = 346.5
+offset_bottom = 226.0
+
+[node name="LblMutacao" type="Label" parent="." unique_id=1063728732]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 245.0
+text = "Porcentagem de Mutação"
+
+[node name="SliderMutacao" type="HSlider" parent="." unique_id=1505988626]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 270.0
+offset_right = 250.0
+
+[node name="SboxMutacao" type="SpinBox" parent="." unique_id=110743588]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 260.0
+offset_right = 346.5
+offset_bottom = 291.0
+
+[node name="BtnGerar" type="Button" parent="." unique_id=1946422346]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 320.0
+text = "Gerar Simulacao"
+
+[node name="BtnProximaEtapa" type="Button" parent="." unique_id=1086564073]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 370.0
+text = "Proxima Etapa"
+
+[connection signal="changed" from="SliderCromossomos" to="." method="_on_slider_cromossomos_changed"]
+[connection signal="changed" from="SboxCromossomos" to="." method="_on_sbox_cromossomos_changed"]
+[connection signal="changed" from="SliderSegmentos" to="." method="_on_slider_segmentos_changed"]
+[connection signal="changed" from="SboxSegmentos" to="." method="_on_sbox_segmentos_changed"]
+[connection signal="changed" from="SliderAdesividade" to="." method="_on_slider_adesividade_changed"]
+[connection signal="changed" from="SboxAdesividade" to="." method="_on_sbox_adesividade_changed"]
+[connection signal="changed" from="SliderMutacao" to="." method="_on_slider_mutacao_changed"]
+[connection signal="changed" from="SboxMutacao" to="." method="_on_sbox_mutacao_changed"]
+[connection signal="pressed" from="BtnGerar" to="." method="_on_btn_gerar_pressed"]
+[connection signal="pressed" from="BtnProximaEtapa" to="." method="_on_btn_proxima_etapa_pressed"]

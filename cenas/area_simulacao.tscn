@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://uncnu5jxnlnm"]
+
+[node name="AreaSimulacao" type="Control" unique_id=250308724]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="TituloFase" type="Label" parent="." unique_id=756755166]
+layout_mode = 0
+offset_left = 350.0
+offset_top = 20.0
+text = "Fase da Meiose"
+
+[node name="ContainerCromossomos" type="Control" parent="." unique_id=1530342802]
+anchors_preset = 0
+offset_left = 120.0
+offset_top = 80.0
+offset_right = 900.0
+offset_bottom = 500.0
+
+[node name="PainelInfo" type="Panel" parent="." unique_id=276541239]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 520.0
+offset_right = 900.0
+offset_bottom = 620.0
+
+[node name="TextoInfo" type="RichTextLabel" parent="PainelInfo" unique_id=2051536933]
+layout_mode = 0
+offset_right = 760.0
+offset_bottom = 90.0

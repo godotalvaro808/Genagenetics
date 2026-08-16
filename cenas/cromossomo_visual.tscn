@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://70v34qpiy4nq"]
+
+[ext_resource type="Script" uid="uid://n3n1l6r64t0p" path="res://scripts/cromossomo_visual.gd" id="1_c6u5p"]
+
+[node name="CromossomoVisual" type="Node2D" unique_id=426017361]
+script = ExtResource("1_c6u5p")
