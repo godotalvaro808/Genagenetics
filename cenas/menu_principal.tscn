@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://chwdqc1l6f5s6"]
+
+[ext_resource type="Texture2D" uid="uid://0hiykjmxtvwv" path="res://sprites/Backgrounds/tempBgMenuPrincipal.jpg" id="1_405qn"]
+[ext_resource type="Script" uid="uid://d4kkcs0pp66rk" path="res://scripts/btn_jogar.gd" id="1_bllnq"]
+
+[node name="MenuPrincipal" type="Control" unique_id=652867020]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="Background" type="TextureRect" parent="." unique_id=1261802724]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+texture = ExtResource("1_405qn")
+
+[node name="Titulo" type="Label" parent="." unique_id=494226532]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 60.0
+text = "Laboratorio Genetico"
+
+[node name="BtnJogar" type="Button" parent="." unique_id=730815986]
+layout_mode = 0
+offset_left = 460.0
+offset_top = 180.0
+text = "Jogar"
+script = ExtResource("1_bllnq")
+
+[node name="BtnTutorial" type="Button" parent="." unique_id=613947551]
+layout_mode = 0
+offset_left = 460.0
+offset_top = 250.0
+text = "Tutorial"
+
+[node name="BtnSair" type="Button" parent="." unique_id=715947639]
+layout_mode = 0
+offset_left = 460.0
+offset_top = 320.0
+text = "Sair"
+
+[connection signal="pressed" from="BtnJogar" to="BtnJogar" method="_on_pressed"]
