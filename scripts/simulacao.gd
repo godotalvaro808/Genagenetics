@@ -1,4 +1,4 @@
-extends Node2D
+extends Node2D #simulacao.gd
 #================================================#
 #=================== CONFIG =====================#
 #================================================#
@@ -131,6 +131,8 @@ class Cromossomo:
 	var b :Cromatide = null
 	var origem :String
 	var duplicado :bool = false
+	var altura_visual :float = 200.0
+	var largura_visual :float = 20.0 
 	
 	#--------------------------------------------#
 	# Duplicação da cromátide para a Interfase
@@ -276,26 +278,33 @@ func iniciar(inf :Dictionary) -> void:
 #================================================#
 # Formará a célula que será utilizada na meiose
 func criar_pares_homologos() -> void:
-	for indiceCrom in range(informacoes["crom"]):
+	
+	var quantidade_pares :int = informacoes["crom"]
+	
+	for indiceCrom in range(quantidade_pares):
 		var par = ParHomologo.new()
 		
+		var altura_par :float = obter_altura_par(indiceCrom, quantidade_pares)
+		var largura_par :float = obter_largura_aleatoria(altura_par)
+		
 		par.materno = criar_cromossomo(
-			indiceCrom,
-			"materna",
-			informacoes["seg"],
-			informacoes["ades"],
+			indiceCrom, "materna",
+			informacoes["seg"], informacoes["ades"],
 			informacoes["alelos1"][indiceCrom]
 		)
+		par.materno.altura_visual = altura_par
+		par.materno.largura_visual = largura_par
 		
 		par.paterno = criar_cromossomo(
-			indiceCrom,
-			"paterna",
-			informacoes["seg"],
-			informacoes["ades"],
+			indiceCrom, "paterna",
+			informacoes["seg"], informacoes["ades"],
 			informacoes["alelos2"][indiceCrom]
 		)
+		par.paterno.altura_visual = altura_par
+		par.paterno.largura_visual = largura_par
 		
 		celula.pares_homologos.append(par)
+
 func criar_cromossomo(
 	indiceCrom :int,
 	origem :String,
@@ -341,6 +350,8 @@ func criar_cromossomo_simples(
 	
 	novo_crom.a = Cromatide.new()
 	novo_crom.origem = crom_original.origem
+	novo_crom.altura_visual = crom_original.altura_visual
+	novo_crom.largura_visual = crom_original.largura_visual
 	
 	var origem_croma :Cromatide
 	
@@ -455,44 +466,33 @@ func executar_interfase() -> void:
 #================================================#
 func executar_profase_I() -> void:
 	
-	var centro := obter_centro_celula()
+	var centro :Vector2 = obter_centro_celula()
+	var quantidade_pares :int = celula.pares_homologos.size()
 	
-	var quantidade := celula.pares_homologos.size() * 2
+	var espacamento :float = 3.0
+	if quantidade_pares > 1:
+		espacamento = 300.0 / float(quantidade_pares - 1)
 	
-	var espacamento := 0.0
-	
-	if quantidade > 1:
-		espacamento = 300.0 / float(quantidade - 1)
-	
+	var offset_x :float = 30.0
 	var indice := 0
 	
 	for par in celula.pares_homologos:
+		par.crossOver()
 		
 		var visual_materno :CromossomoVisual = visuais[par.materno]
 		var visual_paterno :CromossomoVisual = visuais[par.paterno]
 		
-		var destino_materno := Vector2(
-			centro.x,
-			centro.y - 150.0 + espacamento * indice
-		)
-		
+		var y := centro.y - 150.0 + espacamento * indice
 		indice += 1
 		
-		var destino_paterno := Vector2(
-			centro.x,
-			centro.y - 150.0 + espacamento * indice
-		)
+		var destino_materno := Vector2(centro.x - offset_x, y)
+		var destino_paterno := Vector2(centro.x + offset_x, y)
 		
-		indice += 1
-		
-		visual_materno.mover_para(
-			destino_materno
-		)
-		
-		visual_paterno.mover_para(
-			destino_paterno
-		)
-		
+		visual_materno.mover_para(destino_materno)
+		visual_paterno.mover_para(destino_paterno)
+	
+	atualizar_desenhos()
+	
 	faseAtual = FaseMeiose.METAFASE_I
 
 #================================================#
@@ -504,30 +504,34 @@ func executar_metafase_I() -> void:
 	
 	print("METAFASE I")
 	
-	var quantidade := celula.pares_homologos.size()
+	var quantidade :int = celula.pares_homologos.size()
+	var centro := obter_centro_celula()
+	
+	var altura_media :float = 0.0
+	var largura_media :float = 0.0
+	
+	for par in celula.pares_homologos:
+		altura_media += par.materno.altura_visual
+		largura_media += par.materno.largura_visual
+	
+	altura_media /= float(quantidade)
+	largura_media /= float(quantidade)
+	
+	var espaco_y :float = altura_media * 2.0
+	var espaco_x :float = largura_media * 2.0 
+	
+	var posicoes := calcular_posicoes_grade(
+		quantidade, centro, 5, 4, espaco_x, espaco_y
+	)
 	
 	for i in range(quantidade):
-		
 		var par := celula.pares_homologos[i]
+		var centro_par :Vector2 = posicoes[i]
+		var offset_par :float = par.materno.largura_visual * 0.75
 		
-		var y := 150.0 + i * 80.0
-		
-		mover_cromossomo(
-			par.materno,
-			Vector2(
-				300.0,
-				y
-			)
-		)
-		
-		mover_cromossomo(
-			par.paterno,
-			Vector2(
-				400.0,
-				y
-			)
-		)
-		
+		mover_cromossomo(par.materno, centro_par - Vector2(offset_par, 0))
+		mover_cromossomo(par.paterno, centro_par + Vector2(offset_par, 0))
+	
 	faseAtual = FaseMeiose.ANAFASE_I
 
 #================================================#
@@ -574,6 +578,29 @@ func executar_anafase_I() -> void:
 		haploideB,
 		Vector2(510, 315)
 	)
+	
+	var i :int = 0
+	print("Haploide A")
+	for crom in haploideA.cromossomos:
+		print("Cromossomo " + str(i))
+		print("Cromátide A")
+		for seg in crom.a.segmentos:
+			print(str(seg.alelo.tipo) + ": " + str(seg.alelo.valor))
+		print("Cromátide B")
+		for seg in crom.b.segmentos:
+			print(str(seg.alelo.tipo) + ": " + str(seg.alelo.valor))
+		i += 1
+	i = 0
+	print("Haploide B")
+	for crom in haploideB.cromossomos:
+		print("Cromossomo " + str(i))
+		print("Cromátide A")
+		for seg in crom.a.segmentos:
+			print(str(seg.alelo.tipo) + ": " + str(seg.alelo.valor))
+		print("Cromátide B")
+		for seg in crom.b.segmentos:
+			print(str(seg.alelo.tipo) + ": " + str(seg.alelo.valor))
+		i += 1
 	
 	faseAtual = FaseMeiose.TELOFASE_I
 
@@ -683,10 +710,8 @@ func executar_anafase_II() -> void:
 			Gameta.new()
 		)
 		
-	for visual in visuais.values():
-		
-		if visual != null:
-			visual.visible = false
+	for cromossomo in visuais.keys():
+		esconder_visual(cromossomo)
 			
 	criar_cromossomos_gametas(
 		haploideA,
@@ -699,6 +724,39 @@ func executar_anafase_II() -> void:
 		2,
 		3
 	)
+	
+	
+	var i :int = 0
+	
+	for crom in haploideA.cromossomos:
+		
+		var g0 :String = ""
+		for j in range(gametas[0].cromossomos[i].a.segmentos.size()):
+			g0 += " " + str(gametas[0].cromossomos[i].a.segmentos[j].alelo.valor)
+		print("gameta 0:" + g0)
+		
+		var g1 :String = ""
+		for j in range(gametas[1].cromossomos[i].a.segmentos.size()):
+			g1 += " " + str(gametas[1].cromossomos[i].a.segmentos[j].alelo.valor)
+		print("gameta 1:" + g1)
+		
+		i += 1
+	
+	i = 0
+	
+	for crom in haploideB.cromossomos:
+		
+		var g2 :String = ""
+		for j in range(gametas[2].cromossomos[i].a.segmentos.size()):
+			g2 += " " + str(gametas[2].cromossomos[i].a.segmentos[j].alelo.valor)
+		print("gameta 2:" + g2)
+		
+		var g3 :String = ""
+		for j in range(gametas[3].cromossomos[i].a.segmentos.size()):
+			g3 += " " + str(gametas[3].cromossomos[i].a.segmentos[j].alelo.valor)
+		print("gameta 3:" + g3)
+		
+		i += 1
 	
 	faseAtual = FaseMeiose.TELOFASE_II
 
@@ -732,15 +790,15 @@ func criar_cromossomos_gametas(
 		
 		criar_visual_cromossomo(
 			cromossomo_a,
-			largura_visual_padrao(),
-			altura_visual_padrao(),
+			cromossomo_a.largura_visual,
+			cromossomo_a.altura_visual,
 			obter_centro_celula()
 		)
 		
 		criar_visual_cromossomo(
 			cromossomo_b,
-			largura_visual_padrao(),
-			altura_visual_padrao(),
+			cromossomo_b.largura_visual,
+			cromossomo_b.altura_visual,
 			obter_centro_celula()
 		)
 
@@ -757,22 +815,22 @@ func executar_telofase_II() -> void:
 	
 	organizar_gameta_visual(
 		gametas[0],
-		Vector2(160, 180)
+		Vector2(150, -400)
 	)
 	
 	organizar_gameta_visual(
 		gametas[1],
-		Vector2(490, 180)
+		Vector2(150, 800)
 	)
 	
 	organizar_gameta_visual(
 		gametas[2],
-		Vector2(160, 450)
+		Vector2(600, -400)
 	)
 	
 	organizar_gameta_visual(
 		gametas[3],
-		Vector2(490, 450)
+		Vector2(600, 800)
 	)
 	
 	faseAtual = FaseMeiose.FINALIZADA
@@ -782,22 +840,31 @@ func organizar_gameta_visual(
 	centro :Vector2
 ) -> void:
 	var quantidade := gameta.cromossomos.size()
+	if quantidade == 0:
+		return
+	
+	var altura_media :float = 0.0
+	var largura_media :float = 0.0
+	
+	for cromossomo in gameta.cromossomos:
+		altura_media += cromossomo.altura_visual
+		largura_media += cromossomo.largura_visual
+	
+	altura_media /= float(quantidade)
+	largura_media /= float(quantidade)
+	
+	var espaco_x :float = largura_media * 1.5
+	var espaco_y :float = altura_media * 1.5
+	
+	var posicoes := calcular_posicoes_grade(
+		quantidade, centro, 4, 5, espaco_x, espaco_y
+	)
 	
 	for i in range(quantidade):
-		
 		var cromossomo := gameta.cromossomos[i]
-		
-		var offset_y := (
-			float(i)
-			- float(quantidade - 1) * 0.5
-		) * 45.0
-		
-		mover_cromossomo(
-			cromossomo,
-			centro + Vector2(0, offset_y)
-		)
-		
+		mover_cromossomo(cromossomo, posicoes[i])
 		visuais[cromossomo].visible = true
+
 
 #================================================#
 #================== DEBUG =======================#
@@ -833,15 +900,6 @@ func imprimir_genoma() -> void:
 #================================================#
 func criar_visuais() -> void:
 	
-	var quantidade_cromossomos :int = informacoes["crom"]
-	
-	var altura :float = (
-		350.0
-		/ max(quantidade_cromossomos, 1)
-	)
-	
-	var largura :float = ( 60.0 / max(quantidade_cromossomos, 1) * 1.25 )
-	
 	var centro := obter_centro_celula()
 	var raio := obter_raio_celula()
 	
@@ -849,15 +907,15 @@ func criar_visuais() -> void:
 		
 		var visual_materno := criar_visual_cromossomo(
 			par.materno,
-			largura,
-			altura,
+			par.materno.largura_visual,
+			par.materno.altura_visual,
 			centro
 		)
 		
 		var visual_paterno := criar_visual_cromossomo(
 			par.paterno,
-			largura,
-			altura,
+			par.paterno.largura_visual,
+			par.paterno.altura_visual,
 			centro
 		)
 		
@@ -893,14 +951,12 @@ func criar_visual_cromossomo(
 	visuais[cromossomo] = visual
 	
 	return visual
-func largura_visual_padrao() -> float:
-	return 60.0 / max(informacoes["crom"], 1) * 1.25
-func altura_visual_padrao() -> float:
-	return 350.0 / max(informacoes["crom"], 1)
+
 func obter_centro_celula() -> Vector2:
 	return to_local(
 		area_2d.global_position
 	)
+
 func obter_raio_celula() -> float:
 	var forma := (
 		$Celula/Area2D/CollisionShape2D.shape
@@ -909,6 +965,32 @@ func obter_raio_celula() -> float:
 	if forma == null:
 		return 0.0
 	return forma.radius
+
+func obter_altura_par(indice :int, quantidade_pares :int) -> float:
+	
+	var altura_maxima :float = 270.0
+	var altura_minima :float = 20.0
+	var espaco_gap :float = 4.0
+	
+	var espaco_total :float = altura_maxima - altura_minima
+	var espaco_disponivel :float = (
+		espaco_total - espaco_gap * float(quantidade_pares - 1)
+	)
+	
+	var largura_banda :float = espaco_disponivel / float(quantidade_pares)
+	largura_banda = max(largura_banda, 4.0)   # nunca deixa a banda sumir
+	
+	var banda_topo :float = altura_maxima - indice * (largura_banda + espaco_gap)
+	var banda_base :float = banda_topo - largura_banda
+	
+	banda_topo = max(banda_topo, altura_minima)
+	banda_base = max(banda_base, altura_minima)
+	
+	return randf_range(banda_base, banda_topo)
+
+func obter_largura_aleatoria(altura :float) -> float:
+	var proporcao :float = randf_range(2.5, 4.8)
+	return altura / proporcao
 
 func mover_cromossomo(
 	cromossomo :Cromossomo,
@@ -921,6 +1003,7 @@ func mover_cromossomo(
 	var visual :CromossomoVisual = visuais[cromossomo]
 	
 	visual.mover_para(posicao)
+
 func atualizar_desenhos() -> void:
 	
 	for visual in visuais.values():
@@ -928,6 +1011,48 @@ func atualizar_desenhos() -> void:
 			continue
 		
 		visual.atualizar_desenho()
+
+func calcular_posicoes_grade(
+	quantidade :int,
+	centro :Vector2,
+	max_por_coluna :int,
+	max_colunas :int,
+	espaco_x :float,
+	espaco_y :float
+) -> Array[Vector2]:
+	
+	var posicoes :Array[Vector2] = []
+	if quantidade == 0:
+		return posicoes
+	
+	var num_colunas :int = max(
+		1,
+		min(max_colunas, ceili(float(quantidade) / float(max_por_coluna)))
+	)
+	var num_linhas :int = ceili(float(quantidade) / float(num_colunas))
+	
+	for i in range(quantidade):
+		
+		var coluna :int = i / num_linhas
+		var linha :int = i % num_linhas
+		
+		var itens_nesta_coluna :int = min(
+			num_linhas,
+			quantidade - coluna * num_linhas
+		)
+		
+		var offset_x :float = (
+			float(coluna) - float(num_colunas - 1) * 0.5
+		) * espaco_x
+		
+		var offset_y :float = (
+			float(linha) - float(itens_nesta_coluna - 1) * 0.5
+		) * espaco_y
+		
+		posicoes.append(centro + Vector2(offset_x, offset_y))
+	
+	return posicoes
+
 func esconder_visual(
 	cromossomo :Cromossomo
 ) -> void:
@@ -938,6 +1063,7 @@ func esconder_visual(
 	var visual :CromossomoVisual = visuais[cromossomo]
 	
 	visual.visible = false
+
 func limpar_visuais() -> void:
 	
 	for visual in visuais.values():

@@ -1,4 +1,4 @@
-class_name CentrioloVisual
+class_name CentrioloVisual #centriolo_visual.gd
 extends Node2D
 
 

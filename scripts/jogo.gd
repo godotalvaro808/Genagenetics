@@ -1,4 +1,4 @@
-extends Control
+extends Control #jogo.gd
 @onready var painel = $PainelControle
 @onready var simulacao = $Simulacao
 

@@ -1,11 +1,11 @@
-class_name CromossomoVisual
+class_name CromossomoVisual #cromossomo_visual.gd
 extends Node2D
 
 
 var cromossomo :Object
 
 var largura_visual :float = 40.0
-var altura_visual :float = 100.0
+var altura_visual :float = 250.0
 
 var centro_flutuacao :Vector2
 var raio_flutuacao :float
@@ -38,6 +38,9 @@ func configurar(
 	
 	queue_redraw()
 
+func redimensionar(nova_largura :float) -> void:
+	largura_visual = nova_largura
+	queue_redraw()
 
 func iniciar_flutuacao(
 	centro :Vector2,
@@ -108,9 +111,9 @@ func obter_posicao_aleatoria(
 	# pela área do círculo, em vez de concentrá-los
 	# excessivamente no centro.
 	
-	var angulo := randf() * TAU
+	var angulo :float = randf() * TAU
 	
-	var distancia := (
+	var distancia :float = (
 		sqrt(randf())
 		* raio_disponivel
 	)
@@ -159,10 +162,10 @@ func _draw() -> void:
 	if cromossomo == null:
 		return
 	
-	var metade_largura := largura_visual / 2.0
-	var metade_altura := altura_visual / 2.0
+	var metade_largura :float = largura_visual * 0.5
+	var metade_altura :float = altura_visual * 0.5
 	
-	var distancia := metade_largura * 0.5
+	var distancia :float = metade_largura * 0.5
 	
 	var segmentos_a = cromossomo.a.segmentos
 	
@@ -177,73 +180,51 @@ func _draw() -> void:
 	if quantidade_segmentos == 0:
 		return
 	
-	var altura_segmento := altura_visual / float(quantidade_segmentos)
+	var altura_segmento :float = altura_visual / float(quantidade_segmentos)
 	
 	for i in range(quantidade_segmentos):
 		
-		var y_inicial := -metade_altura + altura_segmento * i
-		var y_final := y_inicial + altura_segmento
+		var y_inicial :float = -metade_altura + altura_segmento * i
+		var y_centro :float = y_inicial + altura_segmento * 0.5
 		
-		# Segmento → alelo → valor
 		var alelo_a :int = segmentos_a[i].alelo.valor
 		var cor_a :Color = cores[alelo_a]
 		
-		# Desenha a cromátide A.
-		draw_line(
-			Vector2(-distancia, y_inicial),
-			Vector2(-distancia, y_final),
-			cor_a,
-			4.0
+		draw_rect(
+			Rect2(
+				Vector2(-distancia * 1.15, y_inicial),
+				Vector2(largura_visual * 0.5, altura_segmento)
+			),
+			cor_a
 		)
 		
 		if possui_b:
 			
-			# Segmento → alelo → valor
 			var alelo_b :int = segmentos_b[i].alelo.valor
 			var cor_b :Color = cores[alelo_b]
 			
-			# Desenha a cromátide B.
-			draw_line(
-				Vector2(distancia, y_inicial),
-				Vector2(distancia, y_final),
-				cor_b,
-				4.0
-			)
-			
-			# Conecta as duas cromátides.
-			draw_line(
-				Vector2(-distancia, y_inicial),
-				Vector2(distancia, y_inicial),
-				cor_a.lerp(cor_b, 0.5),
-				2.0
+			draw_rect(
+				Rect2(
+					Vector2(distancia * 1.15, y_inicial),
+					Vector2(largura_visual * 0.5, altura_segmento)
+				),
+				cor_b
 			)
 	
-	# A linha final que fecha a última extremidade
-	# só existe quando o cromossomo possui duas cromátides.
-	if possui_b:
-		
-		var ultimo_a :int = (
-			segmentos_a[quantidade_segmentos - 1].alelo.valor
-		)
-		
-		var ultimo_b :int = (
-			segmentos_b[quantidade_segmentos - 1].alelo.valor
-		)
-		
+	if (possui_b):
+		# Linha de conexão entre A e B, na altura do centro do segmento.
 		draw_line(
-			Vector2(-distancia, metade_altura),
-			Vector2(distancia, metade_altura),
-			cores[ultimo_a].lerp(
-				cores[ultimo_b],
-				0.5
-			),
+			Vector2(0.0, 0.0),
+			Vector2(metade_largura, 0.0),
+			Color.BLACK,
 			2.0
 		)
+	
 
 func atualizar_desenho() -> void:
 	queue_redraw()
 
-var cores := {
+var cores :Dictionary = {
 	0: Color.from_rgba8(255, 50, 50, 255),
 	1: Color.from_rgba8(255, 90, 60, 255),
 	2: Color.from_rgba8(255, 255, 100, 255),

@@ -1,4 +1,4 @@
-extends Panel
+extends Panel #painel_controle.gd
 @warning_ignore("unused_parameter")
 
 #-Enviar sinal para começar simulação-#

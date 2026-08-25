@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://j15ig5s63erd" path="res://scripts/jogo.gd" id="1_32vai"]
 [ext_resource type="PackedScene" uid="uid://bdcs3frn0b2vp" path="res://cenas/painel_controle.tscn" id="1_k46e6"]
 [ext_resource type="PackedScene" uid="uid://dfj6us2ln5rck" path="res://cenas/simulacao.tscn" id="3_1frua"]
+[ext_resource type="Script" uid="uid://2dh2s3xlgtru" path="res://scripts/camera_2d.gd" id="4_bkotw"]
 
 [node name="Jogo" type="Control" unique_id=1137234020]
 layout_mode = 3
@@ -26,3 +27,7 @@ offset_bottom = 648.0
 
 [node name="Simulacao" parent="." unique_id=386405566 instance=ExtResource("3_1frua")]
 position = Vector2(500, -2)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1730265261]
+position = Vector2(576, 324)
+script = ExtResource("4_bkotw")
